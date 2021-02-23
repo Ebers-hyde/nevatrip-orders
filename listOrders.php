@@ -6,13 +6,14 @@
     if(!$_SESSION['user']) {
         header('Location: index.php');
     }
-    // достаём из таблицы заказы для того, чтоб показать форму заказов под каждое событие
+    // достаём из БД заказы для того, чтоб показать таблицу заказов под каждое событие
     $resultOrders = $connect->query('SELECT * FROM orders');
     $orders = array();
     while($row = $resultOrders->fetch(PDO::FETCH_ASSOC)) {
         $orders[] = $row;
     }
 
+    // достаём из БД билеты для того, чтоб показать таблицу билетов
     $resultTickets = $connect->query('SELECT * FROM tickets');
     $tickets = array();
     while($row = $resultTickets->fetch(PDO::FETCH_ASSOC)) {
@@ -30,6 +31,7 @@
 </head>
 <body>
     <h3>Заказы</h3>
+    <!-- Для каждого заказа вывод строк с данными-->
     <table>
         <tr>
             <td>Ид заказа</td>
@@ -57,6 +59,7 @@
     <?php endforeach;?>
     </table>
     <h3>Билеты</h3>
+    <!-- Для каждого билета вывод строк с данными-->
     <table>
         <tr>
             <td>Ид билета</td>

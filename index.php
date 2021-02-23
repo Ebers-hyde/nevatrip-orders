@@ -1,10 +1,13 @@
 <?php
     session_start();
+
+    //если в сессии уже установлен пользователь, происходит редирект на страницу создания заказа
     if($_SESSION['user']) {
         header('Location: eventOrder.php');
     }
 ?>
 
+<!-- Иначе форма входа со ссылкой на страницу регистрации-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,12 +25,6 @@
     <input type="password" placeholder="Введите пароль" name="password" id="">
     <button type="submit">Войти</button>
     <p>У вас нет аккаунта? <a href="register.php">- зарегистрируйтесь</a></p>
-    <?php 
-        if($_SESSION['message']) {
-            echo '<p class="msg"> ' . $_SESSION['message'] . '</p>';
-        }
-        unset($_SESSION['message']);
-    ?>
     </form>
 </body>
 </html>

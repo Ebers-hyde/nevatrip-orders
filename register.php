@@ -26,12 +26,6 @@
     <input type="text" name="full_name" placeholder="Введите свое полное имя" id="">
     <button type="submit">Создать аккаунт</button>
     <p>У вас уже есть аккаунт? <a href="index.php"> - авторизуйтесь</a></p>
-    <?php 
-        if($_SESSION['message']) {
-            echo '<p class="msg"> ' . $_SESSION['message'] . '</p>';
-        }
-        unset($_SESSION['message']);
-    ?>
     </form>
 </body>
 </html>
