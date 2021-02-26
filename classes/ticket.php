@@ -6,14 +6,12 @@ class Ticket {
     //Свойства: ид заказа, тип, цена и штрихкод
     private $_order_id;
     private $_type;
-    private $_price;
     private $_barcode;
 
     //всё кроме штрихкода записывается в конструкторе
-    public function __construct($order_id, $type, $price) {
+    public function __construct($order_id, $type) {
         $this->_order_id = $order_id;
         $this->_type = $type;
-        $this->_price = $price;
     }
 
     //в метод приходит ид события, генерируется случайное 4-значное число, затем формируется штрихкод путём их соединения  
@@ -25,14 +23,13 @@ class Ticket {
     //Метод записи билета в БД. добавлен только ид каждого билета, который устанавливается автоматически в базе
     public function saveTicket() {
         global $connect;
-        $stmt = $connect->prepare("INSERT INTO `tickets` (`ticket_id`, `order_id`, `ticket_type`, `price`, `barcode`) 
-        VALUES (:ticket_id, :order_id, :ticket_type, :price, :barcode)");
+        $stmt = $connect->prepare("INSERT INTO `bought_tickets` (`ticket_id`, `order_id`, `ticket_type`, `barcode`) 
+        VALUES (:ticket_id, :order_id, :ticket_type, :barcode)");
         $stmt->execute([
             ':ticket_id' => NULL,
             ':order_id' => $this->_order_id,
             ':ticket_type' => $this->_type,
-            ':price' => $this->_price,
-            ':barcode' => $this->_barcode
+            ':barcode' => $this->_barcode,
         ]);
     }
 }

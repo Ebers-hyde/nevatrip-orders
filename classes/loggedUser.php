@@ -2,7 +2,7 @@
 session_start();
 require_once("../vendor/connect.php");
 
-class LoggedUser 
+class LoggedUser
 {
     //checkUser - свойство с методом запроса к базе данных. наверное, так неправильно, но пока так.  
     private $id;

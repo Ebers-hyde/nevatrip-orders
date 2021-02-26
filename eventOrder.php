@@ -13,6 +13,11 @@
     while($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $events[] = $row;
     }
+    $resultTickets = $connect->query('SELECT * FROM tickets');
+    $tickets = array();
+    while($row = $resultTickets->fetch(PDO::FETCH_ASSOC)) {
+        $tickets[] = $row;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -27,21 +32,23 @@
     <h3>Добавление заказов и билетов</h3>
     <!-- Цикл, вывод формы для создания заказа и билетов на каждое событие-->
     <?php foreach($events as $event):?>
-    <!-- Громоздкая строка, создаются объекты для каждого события, с передачей параметров из элементов массива -->
-    <?php $new_event = new Event($event['event_id'], $event['event_date'], $event['event_name'], $event["tickets_regular_price"],
-    $event["tickets_kid_available"], $event["tickets_kid_price"], $event["tickets_group_available"], $event["tickets_group_price"],
-    $event["tickets_soft_available"], $event["tickets_soft_price"]);
+    <!-- Cоздаются объекты для каждого события, с передачей параметров из элементов массива -->
+    <?php 
+    $new_event = new Event($event['event_id'], $event['event_date'], $event['event_name'], $tickets);
     // вывод названия события через метод
     echo $new_event->displayEventName();?>
     <form action="vendor/saveOrder.php" method="post" class="orderForm">
     <?php
-    //через методы добавляются ид события для передачи (скрыт), и инпуты формы в зависимости от того, доступны ли билеты
-    //определённого типа
+    //через методы добавляются ид события для передачи (скрыт)
     echo $new_event->displayEventId();
-    echo $new_event->displayRegularTicketsForm();
-    echo $new_event->areTicketsAvailable('_tickets_kid_available', '_tickets_kid_price', 'kids', 'kids_price', 'детей');
-    echo $new_event->areTicketsAvailable('_tickets_group_available', '_tickets_group_price', 'group', 'group_price', 'групповых билетов');
-    echo $new_event->areTicketsAvailable('_tickets_soft_available', '_tickets_soft_price', 'soft', 'soft_price', 'льготных билетов');
+
+    //Возвращается количество разных типов билетов, выделенных под событие
+    $ix= $new_event->getTicketsForms();
+    //Запускается цикл. Например можно заказывать на событие 4 разных билетов
+    for($i=0; $i <= $ix-1; $i++) {
+        //Методом объекта выводится блок формы, инпут для количества билетов с подписью, скрытые инпуты. 
+        echo $new_event->displayTicketsForm($i);
+    }
     ?>
     <input class="formSubmit" type="submit" value="Заказать">  
     </form>

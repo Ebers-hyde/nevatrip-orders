@@ -14,7 +14,7 @@
     }
 
     // достаём из БД билеты для того, чтоб показать таблицу билетов
-    $resultTickets = $connect->query('SELECT * FROM tickets');
+    $resultTickets = $connect->query('SELECT * FROM bought_tickets');
     $tickets = array();
     while($row = $resultTickets->fetch(PDO::FETCH_ASSOC)) {
         $tickets[] = $row;
@@ -37,10 +37,7 @@
             <td>Ид заказа</td>
             <td>Ид пользователя</td>
             <td>Ид события</td>
-            <td>Количество взрослых билетов</td>
-            <td>Количество детских билетов</td>
-            <td>Количество групповых билетов</td>
-            <td>Количество льготных билетов</td>
+            <td>Количество билетов</td>
             <td>Сумма </td>
             <td>Заказ создан:</td>
         </tr>
@@ -49,10 +46,7 @@
             <td><?=$order["order_id"]?></td>
             <td><?=$order["user_id"]?></td>
             <td><?=$order["event_id"]?></td>
-            <td><?=$order["tickets_regular_amount"]?></td>
-            <td><?=$order["tickets_kids_amount"]?></td>
-            <td><?=$order["tickets_group_amount"]?></td>
-            <td><?=$order["tickets_soft_amount"]?></td>
+            <td><?=$order["tickets_amount"]?></td>
             <td><?=$order["sum"]?> рублей</td>
             <td><?=$order["created"]?></td>
         </tr>
@@ -63,9 +57,8 @@
     <table>
         <tr>
             <td>Ид билета</td>
-            <td>Ид события</td>
+            <td>Ид заказа</td>
             <td>Тип билета</td>
-            <td>Цена билета</td>
             <td>Штрихкод</td>
         </tr>
     <?php foreach($tickets as $ticket):?>
@@ -73,7 +66,6 @@
             <td><?=$ticket["ticket_id"]?></td>
             <td><?=$ticket["order_id"]?></td>
             <td><?=$ticket["ticket_type"]?></td>
-            <td><?=$ticket["price"]?></td>
             <td><?=$ticket["barcode"]?></td>
         </tr>
     <?php endforeach;?>
