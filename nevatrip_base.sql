@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 26 2021 г., 12:14
+-- Время создания: Фев 27 2021 г., 17:46
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -142,8 +142,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `login`, `password`, `full_name`) VALUES
-(4, 'cerverus', 'e5d9dee0892c9f474a174d3bfffb7810', 'Соколов Пётр Сергеевич'),
-(5, 'verbalizer', '9b70d6dbfb1457d05e4e2c2fbb42d7db', 'Васильев Иван Сергеевич');
+(4, 'cerverus', 'e5d9dee0892c9f474a174d3bfffb7810', 'Соколов Пётр Сергеевич');
 
 --
 -- Индексы сохранённых таблиц
@@ -153,7 +152,8 @@ INSERT INTO `users` (`user_id`, `login`, `password`, `full_name`) VALUES
 -- Индексы таблицы `bought_tickets`
 --
 ALTER TABLE `bought_tickets`
-  ADD PRIMARY KEY (`ticket_id`);
+  ADD PRIMARY KEY (`ticket_id`),
+  ADD KEY `order_id` (`order_id`);
 
 --
 -- Индексы таблицы `events`
@@ -165,7 +165,9 @@ ALTER TABLE `events`
 -- Индексы таблицы `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`order_id`);
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `event_id` (`event_id`);
 
 --
 -- Индексы таблицы `tickets`
@@ -206,7 +208,42 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- Ограничения внешнего ключа сохраненных таблиц
+--
+
+--
+-- Ограничения внешнего ключа таблицы `bought_tickets`
+--
+ALTER TABLE `bought_tickets`
+  ADD CONSTRAINT `bought_tickets_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Ограничения внешнего ключа таблицы `events`
+--
+ALTER TABLE `events`
+  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `tickets` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Ограничения внешнего ключа таблицы `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `bought_tickets` (`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Ограничения внешнего ключа таблицы `tickets`
+--
+ALTER TABLE `tickets`
+  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Ограничения внешнего ключа таблицы `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `orders` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
