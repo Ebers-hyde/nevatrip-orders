@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Фев 27 2021 г., 17:46
+-- Время создания: Мар 04 2021 г., 12:06
 -- Версия сервера: 10.3.22-MariaDB
 -- Версия PHP: 7.1.33
 
@@ -41,15 +41,15 @@ CREATE TABLE `bought_tickets` (
 --
 
 INSERT INTO `bought_tickets` (`ticket_id`, `order_id`, `ticket_type`, `barcode`) VALUES
-(00022, 0108, 'Взрослый', '004-6000'),
-(00023, 0108, 'Взрослый', '004-4909'),
-(00024, 0108, 'Детский', '004-1953'),
-(00025, 0108, 'Детский', '004-6983'),
-(00026, 0108, 'Детский', '004-5360'),
-(00027, 0108, 'Групповой', '004-6305'),
-(00028, 0108, 'Льготный', '004-2110'),
-(00029, 0108, 'Льготный', '004-6592'),
-(00030, 0108, 'Льготный', '004-6967');
+(00081, 0120, 'Взрослый', '003-4768'),
+(00082, 0120, 'Групповой', '003-2524'),
+(00083, 0120, 'Групповой', '003-9964'),
+(00084, 0121, 'Взрослый', '002-8412'),
+(00085, 0121, 'Детский', '002-4759'),
+(00086, 0121, 'Детский', '002-9785'),
+(00087, 0121, 'Льготный', '002-3214'),
+(00088, 0121, 'Льготный', '002-7658'),
+(00089, 0121, 'Льготный', '002-6113');
 
 -- --------------------------------------------------------
 
@@ -93,7 +93,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `event_id`, `tickets_amount`, `sum`, `created`) VALUES
-(0108, 4, 004, 9, 10350, '2021-02-26 00:09:21');
+(0120, 4, 003, 3, 5900, '2021-03-04 11:37:49'),
+(0121, 4, 002, 6, 4700, '2021-03-04 12:06:14');
 
 -- --------------------------------------------------------
 
@@ -102,6 +103,7 @@ INSERT INTO `orders` (`order_id`, `user_id`, `event_id`, `tickets_amount`, `sum`
 --
 
 CREATE TABLE `tickets` (
+  `type_id` smallint(4) NOT NULL,
   `event_id` smallint(3) UNSIGNED ZEROFILL NOT NULL,
   `ticket_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ticket_price` smallint(10) NOT NULL
@@ -111,18 +113,18 @@ CREATE TABLE `tickets` (
 -- Дамп данных таблицы `tickets`
 --
 
-INSERT INTO `tickets` (`event_id`, `ticket_type`, `ticket_price`) VALUES
-(001, 'Взрослый', 700),
-(001, 'Детский', 450),
-(002, 'Взрослый', 1000),
-(002, 'Детский', 800),
-(002, 'Льготный', 700),
-(003, 'Взрослый', 900),
-(003, 'Групповой', 2500),
-(004, 'Взрослый', 1150),
-(004, 'Детский', 750),
-(004, 'Групповой', 2950),
-(004, 'Льготный', 950);
+INSERT INTO `tickets` (`type_id`, `event_id`, `ticket_type`, `ticket_price`) VALUES
+(1, 001, 'Взрослый', 700),
+(2, 001, 'Детский', 450),
+(3, 002, 'Взрослый', 1000),
+(4, 002, 'Детский', 800),
+(5, 002, 'Льготный', 700),
+(6, 003, 'Взрослый', 900),
+(7, 003, 'Групповой', 2500),
+(8, 004, 'Взрослый', 1150),
+(9, 004, 'Детский', 750),
+(10, 004, 'Групповой', 2950),
+(11, 004, 'Льготный', 950);
 
 -- --------------------------------------------------------
 
@@ -153,6 +155,7 @@ INSERT INTO `users` (`user_id`, `login`, `password`, `full_name`) VALUES
 --
 ALTER TABLE `bought_tickets`
   ADD PRIMARY KEY (`ticket_id`),
+  ADD UNIQUE KEY `barcode` (`barcode`),
   ADD KEY `order_id` (`order_id`);
 
 --
@@ -166,15 +169,15 @@ ALTER TABLE `events`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `event_id` (`event_id`);
+  ADD KEY `event_id` (`event_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Индексы таблицы `tickets`
 --
 ALTER TABLE `tickets`
-  ADD KEY `IX_EventID` (`event_id`),
-  ADD KEY `IX_TicketType` (`ticket_type`);
+  ADD PRIMARY KEY (`type_id`),
+  ADD KEY `event_id` (`event_id`);
 
 --
 -- Индексы таблицы `users`
@@ -190,7 +193,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `bought_tickets`
 --
 ALTER TABLE `bought_tickets`
-  MODIFY `ticket_id` mediumint(5) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `ticket_id` mediumint(5) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- AUTO_INCREMENT для таблицы `events`
@@ -202,7 +205,13 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT для таблицы `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` smallint(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+  MODIFY `order_id` smallint(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+
+--
+-- AUTO_INCREMENT для таблицы `tickets`
+--
+ALTER TABLE `tickets`
+  MODIFY `type_id` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
@@ -218,32 +227,20 @@ ALTER TABLE `users`
 -- Ограничения внешнего ключа таблицы `bought_tickets`
 --
 ALTER TABLE `bought_tickets`
-  ADD CONSTRAINT `bought_tickets_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Ограничения внешнего ключа таблицы `events`
---
-ALTER TABLE `events`
-  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `tickets` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `bought_tickets_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `bought_tickets` (`order_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `tickets`
 --
 ALTER TABLE `tickets`
-  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
---
--- Ограничения внешнего ключа таблицы `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `orders` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`event_id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
